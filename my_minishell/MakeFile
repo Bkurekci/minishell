@@ -1,0 +1,42 @@
+USERNAME=bukurekc
+NAME=minishell
+READLINE=/Users/$(USERNAME)/goinfree/homebrew/Cellar/readline/8.2.1/
+INCLUDE= -IInclude/ -I$(READLINE)include
+CFLAGS=$(INCLUDE) -Wall -Wextra -Werror -g
+CC = gcc -g
+
+SRC=$(shell find . -maxdepth 2 -name "*.c")
+
+OUTPREFIX=builds/
+OBJECT=$(addprefix $(OUTPREFIX), $(SRC:.c=.o))
+
+$(OUTPREFIX)%.o: %.c
+	@mkdir -p $(OUTPREFIX)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+all: info $(NAME)
+	@echo "DONE!"
+
+$(NAME): $(OBJECT)
+	@$(CC) $(CFLAGS) $(OBJECT) -lreadline -L $(READLINE)lib -o $(NAME)
+
+info:
+	@echo "Building..."
+	@if[! -d $(OUTPREFIX)]then echo "The build file has been created."; fi
+	@mkdir -p $(OUTPREFIX);
+	@echo "Compiling files..."
+
+clean:
+	@echo "Cleaning object files...";
+	@if[-d $(OUTPREFIX) ]; then rm -rf $(OUTPREFIX); fi
+	@echo "DONE!"
+
+fclean:
+	@echo "Cleanin program files...";
+	@if[-d $(NAME)]; then rm -rf $(NAME); fi
+	@echo "DONE!";
+
+re : fclean
+
+.PHONY:
+	all clean fclean re
